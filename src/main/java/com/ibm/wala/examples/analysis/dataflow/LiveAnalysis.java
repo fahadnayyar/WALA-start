@@ -81,8 +81,8 @@ public class LiveAnalysis {
         final BitVectorIntSet liveAtExit = new BitVectorIntSet(considerLiveAtExit);
         final SSAInstruction[] instructions = cfg.getInstructions();
 
-//        Map<SSAInstruction, Pair <, > > map = new HashMap();
-        
+        Map < SSAInstruction, Pair < BitVectorVariable, BitVectorVariable > > flowSetsMap = new HashMap();
+
         /* Gen/kill operator specific to exit basic blocks */
         final class ExitBlockGenKillOperator extends UnaryOperator<BitVectorVariable> {
             @Override
@@ -179,13 +179,32 @@ public class LiveAnalysis {
                 for (int i = block.getLastInstructionIndex(); i >= block.getFirstInstructionIndex(); i--) {
                     SSAInstruction inst = instructions[i];
                     if (inst != null) {
+                        BitVectorVariable outSet = new BitVectorVariable();
+                        BitVectorVariable inSet = new BitVectorVariable();
+                        outSet.addAll(bits.getBitVector());
+
                         processDefs(inst, bits.getBitVector());
                         processUses(inst, bits.getBitVector());
+
+                        inSet.addAll(bits.getBitVector());
+                        Pair < BitVectorVariable, BitVectorVariable > flowSet = Pair.make(inSet, outSet);
+//                      System.out.println(flowSet.fst.toString() + ", " + flowSet.snd.toString());
+                        flowSetsMap.put(inst, flowSet);
                     }
                 }
+
                 // 'kill' the variables defined by the Phi instructions in the current block.
                 for (SSAInstruction S : Iterator2Iterable.make(block.iteratePhis())) {
+                    BitVectorVariable outSet = new BitVectorVariable();
+                    BitVectorVariable inSet = new BitVectorVariable();
+                    outSet.addAll(bits.getBitVector());
+
                     processDefs(S, bits.getBitVector());
+
+                    inSet.addAll(bits.getBitVector());
+                    Pair < BitVectorVariable, BitVectorVariable > flowSet = Pair.make(inSet, outSet);
+//                    System.out.println(flowSet.fst.toString() + ", " + flowSet.snd.toString());
+                    flowSetsMap.put(S, flowSet);
                 }
 
                 BitVectorVariable U = new BitVectorVariable();
@@ -273,7 +292,21 @@ public class LiveAnalysis {
                     s.append("live entering ").append(bb).append(':').append(S.getOut(bb)).append('\n');
                     s.append("live exiting ").append(bb).append(':').append(S.getIn(bb)).append('\n');
                 }
-
+                s.append("\n\nINSTRUCTIONS FLOW-SETS: \n\n");
+                for (Map.Entry< SSAInstruction, Pair < BitVectorVariable, BitVectorVariable > > entry : flowSetsMap.entrySet()){
+//                  System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                    Pair<BitVectorVariable, BitVectorVariable> flowSets = (Pair<BitVectorVariable, BitVectorVariable>)entry.getValue();
+                    if (flowSets == null) {
+                        continue;
+                    }
+                    BitVectorVariable inSet = (BitVectorVariable) flowSets.fst;
+                    BitVectorVariable outSet = (BitVectorVariable) flowSets.snd;
+                    String inSetStr = inSet.toString();
+                    String outSetStr = outSet.toString();
+                    String instrStr = entry.getKey().toString();
+                    s.append("inSet of "); s.append(instrStr); s.append(" : "); s.append(inSetStr); s.append("\n");
+                    s.append("outSet of "); s.append(instrStr); s.append(" : "); s.append(outSetStr); s.append("\n");
+                }
                 return s.toString();
             }
 
