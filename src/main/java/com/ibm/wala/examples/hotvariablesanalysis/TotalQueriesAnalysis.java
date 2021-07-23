@@ -71,15 +71,34 @@ public class TotalQueriesAnalysis {
     /** */
     public static void perform(
             final ControlFlowGraph<SSAInstruction, ISSABasicBlock> cfg, final SymbolTable symtab) {
-        println("Level order traversal (bfs):");
-        println("Iterating over all exit basic blocks of cfg to mark 0 in visited map.");
+
+
+        Map < ISSABasicBlock, Pair < Integer, Integer> > flowSetsBB = new HashMap < ISSABasicBlock, Pair <Integer, Integer> >();
+        Map < SSAInstruction, Pair < Integer, Integer> > flowSetsInstr = new HashMap < SSAInstruction, Pair <Integer, Integer> >();
+        final SSAInstruction[] instructions = cfg.getInstructions();
+
+        println("Iterating over all exit basic blocks of cfg to mark 0 in visited map, initialize flowSetsBB and flowSetsInst");
         Map<ISSABasicBlock, Integer> visitedMap = new HashMap<ISSABasicBlock, Integer>();
         Iterator<ISSABasicBlock> bbIterator = cfg.stream().iterator();
-        while (bbIterator.hasNext()){
+        while (bbIterator.hasNext()) {
             ISSABasicBlock currentBB = (ISSABasicBlock) bbIterator.next();
-            print("Iterating over Basic Block: "); println(bbIterator);
-            visitedMap.put(currentBB, new Integer(0));
+            if (currentBB!= null) {
+                print("Iterating over Basic Block: "); println(bbIterator);
+                visitedMap.put(currentBB, new Integer(0));
+                Pair<Integer, Integer> currBBFlowSets = Pair.make(new Integer(0), new Integer(0));
+                flowSetsBB.put(currentBB, currBBFlowSets);
+                for (int i = currentBB.getLastInstructionIndex(); i >= currentBB.getFirstInstructionIndex(); i--) {
+                    SSAInstruction currInstr = instructions[i];
+                    if (currInstr!=null) {
+                        Pair<Integer, Integer> currInstrFlowSets = Pair.make(new Integer(0), new Integer(0));
+                        flowSetsInstr.put(currInstr, currInstrFlowSets);
+                    }
+
+                }
+            }
         }
+
+        println("Level order traversal (bfs):");
         ISSABasicBlock exitBB = cfg.exit();
         print("Exit basic block: "); println(exitBB);
 //        println("Marking exit basic block as visited and inserting it in bfs queue");
@@ -103,6 +122,26 @@ public class TotalQueriesAnalysis {
         }
         ISSABasicBlock entryBB = (ISSABasicBlock) cfg.entry();
         print("Entry basic block: "); println(entryBB);
+
+        println("Printing final flow sets of instructions: ");
+        for (Map.Entry < SSAInstruction, Pair < Integer, Integer> > mapElem : flowSetsInstr.entrySet()){
+            Pair<Integer, Integer> currInstrFlowSets = (Pair<Integer, Integer>)mapElem.getValue();
+            SSAInstruction currentInstr = mapElem.getKey();
+            print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
+            print("INSTRUCTION: "); println(currentInstr.toString());
+            print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+        }
+
+        println("Printing final flow sets of Basic Blocks: ");
+        for (Map.Entry < ISSABasicBlock, Pair < Integer, Integer> > mapElem : flowSetsBB.entrySet()){
+            Pair<Integer, Integer> currInstrFlowSets = (Pair<Integer, Integer>)mapElem.getValue();
+            ISSABasicBlock currentBB = mapElem.getKey();
+            print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
+            print("BASIC-BLOCK: "); println(currentBB.toString());
+            print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+        }
+
+
         return;
 //        return perform(cfg, symtab, new BitVector());
     }
