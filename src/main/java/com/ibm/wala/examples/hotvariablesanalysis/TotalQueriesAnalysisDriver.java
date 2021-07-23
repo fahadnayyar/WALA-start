@@ -12,6 +12,8 @@ package com.ibm.wala.examples.hotvariablesanalysis;
  *******************************************************************************/
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
@@ -24,6 +26,9 @@ import com.ibm.wala.ipa.callgraph.impl.Everywhere;
 import com.ibm.wala.ipa.cha.ClassHierarchy;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
+import com.ibm.wala.ssa.ISSABasicBlock;
+import com.ibm.wala.ssa.SSAInstruction;
+import com.ibm.wala.util.collections.Pair;
 import com.ibm.wala.util.config.AnalysisScopeReader;
 import com.ibm.wala.util.perf.Stopwatch;
 //import com.ibm.wala.util.ref.ReferenceCleanser;
@@ -87,8 +92,39 @@ public class TotalQueriesAnalysisDriver {
                     if (ir != null) {
                         System.out.println(ir.toString());
 //                        System.out.println(totalQueriesAnalysis.perform(ir));
-                          totalQueriesAnalysis.perform(ir);
+                        Pair <Map<ISSABasicBlock, Pair< Integer, Integer >>,
+                                Map <SSAInstruction, Pair < Integer, Integer> > > returnPair = totalQueriesAnalysis.perform(ir);
+
+                        Map < ISSABasicBlock, Pair < Integer, Integer> > flowSetsBB = returnPair.fst;
+                        Map < SSAInstruction, Pair < Integer, Integer> > flowSetsInstr = returnPair.snd;
+
+
+                        //* OUTPUT-DISPLAY: Printing final flow sets of instructions
+                        println("Printing final flow sets of instructions: ");
+                        for (Map.Entry < SSAInstruction, Pair < Integer, Integer> > mapElem : flowSetsInstr.entrySet()){
+                            Pair<Integer, Integer> currInstrFlowSets = (Pair<Integer, Integer>)mapElem.getValue();
+                            SSAInstruction currentInstr = mapElem.getKey();
+                            if (currentInstr!=null) {
+                                print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("INSTRUCTION: "); println(currentInstr.toString());
+                                print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+                            }
+                        }
+
+                        //* OUTPUT-DISPLAY: Printing final flow sets of Basic Blocks
+                        println("Printing final flow sets of Basic Blocks: ");
+                        for (Map.Entry < ISSABasicBlock, Pair < Integer, Integer> > mapElem : flowSetsBB.entrySet()){
+                            Pair<Integer, Integer> currInstrFlowSets = (Pair<Integer, Integer>)mapElem.getValue();
+                            ISSABasicBlock currentBB = mapElem.getKey();
+                            if (currentBB!=null) {
+                                print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("BASIC-BLOCK: "); println(currentBB.toString());
+                                print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+                            }
+
+                        }
                     }
+
 
 
                 }
@@ -100,4 +136,13 @@ public class TotalQueriesAnalysisDriver {
         s.stop();
         System.out.println("RUNNING TIME: " + s.getElapsedMillis());
     }
+
+    // * helper methods
+    public static void println(Object str) {
+        System.out.println(str.toString());
+    }
+    public static void print(Object str) {
+        System.out.print(str.toString());
+    }
+
 }
