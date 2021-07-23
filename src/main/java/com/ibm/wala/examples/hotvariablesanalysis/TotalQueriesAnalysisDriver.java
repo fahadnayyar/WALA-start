@@ -102,7 +102,7 @@ public class TotalQueriesAnalysisDriver {
                             if (currentInstr!=null) {
                                 print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
                                 print("INSTRUCTION: "); println(currentInstr.toString());
-                                print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("OUTSET: { "); print(currInstrFlowSets.snd); println(" }");
                             }
                         }
 
@@ -114,7 +114,7 @@ public class TotalQueriesAnalysisDriver {
                             if (currentBB!=null) {
                                 print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
                                 print("BASIC-BLOCK: "); println(currentBB.toString());
-                                print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("OUTSET: { "); print(currInstrFlowSets.snd); println(" }");
                             }
                         }
                     }
