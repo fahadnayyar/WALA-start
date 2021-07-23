@@ -87,34 +87,66 @@ public class AdditionalQueriesAnalysisDriver {
                     if (ir != null) {
                         System.out.println(ir.toString());
 //                        System.out.println(totalQueriesAnalysis.perform(ir));
-                        Pair <Map<ISSABasicBlock, Pair< Integer, Integer >>,
-                                Map <SSAInstruction, Pair < Integer, Integer> > > returnPair = AdditionalQueriesAnalysis.perform(ir);
+                        Pair < Map < ISSABasicBlock, Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > > >,
+                                Map < SSAInstruction, Pair < Map < SSAInstruction , Integer >,  Map < SSAInstruction , Integer > > > > returnPair = AdditionalQueriesAnalysis.perform(ir);
 
-                        Map < ISSABasicBlock, Pair < Integer, Integer> > flowSetsBB = returnPair.fst;
-                        Map < SSAInstruction, Pair < Integer, Integer> > flowSetsInstr = returnPair.snd;
+                        Map < ISSABasicBlock, Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > > > flowSetsBB = returnPair.fst;
+                        Map < SSAInstruction, Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > > > flowSetsInstr = returnPair.snd;
 
 
                         //* OUTPUT-DISPLAY: Printing final flow sets of instructions
                         println("Printing final flow sets of instructions: ");
-                        for (Map.Entry < SSAInstruction, Pair < Integer, Integer> > mapElem : flowSetsInstr.entrySet()){
-                            Pair<Integer, Integer> currInstrFlowSets = (Pair<Integer, Integer>)mapElem.getValue();
+                        for (Map.Entry < SSAInstruction, Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > > > mapElem : flowSetsInstr.entrySet()){
+                            Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > >currInstrFlowSets = (Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > >)mapElem.getValue();
                             SSAInstruction currentInstr = mapElem.getKey();
                             if (currentInstr!=null) {
-                                print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("INSET: { "); //print(currInstrFlowSets.fst); println(" }");
+                                Map < SSAInstruction , Integer > currInSet= currInstrFlowSets.fst;
+                                for (Map.Entry < SSAInstruction , Integer > mapElem1 : currInSet.entrySet()) {
+                                    SSAInstruction currentInstr1 = mapElem1.getKey();
+                                    if (currentInstr1 != null) {
+                                        print(" ( "); print(currentInstr1); print(" : "); print(mapElem1.getKey()); print(" ), ");
+                                    }
+                                }
+                                println(" }");
                                 print("INSTRUCTION: "); println(currentInstr.toString());
-                                print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("OUTSET: { "); //print(currInstrFlowSets.fst); println(" }");
+                                Map < SSAInstruction , Integer > currOuSet= currInstrFlowSets.snd;
+                                for (Map.Entry < SSAInstruction , Integer > mapElem1 : currInSet.entrySet()) {
+                                    SSAInstruction currentInstr1 = mapElem1.getKey();
+                                    if (currentInstr1 != null) {
+                                        print(" ( "); print(currentInstr1); print(" : "); print(mapElem1.getKey()); print(" ), ");
+                                    }
+                                }
+                                println(" }");
                             }
                         }
 
                         //* OUTPUT-DISPLAY: Printing final flow sets of Basic Blocks
                         println("Printing final flow sets of Basic Blocks: ");
-                        for (Map.Entry < ISSABasicBlock, Pair < Integer, Integer> > mapElem : flowSetsBB.entrySet()){
-                            Pair<Integer, Integer> currInstrFlowSets = (Pair<Integer, Integer>)mapElem.getValue();
+                        for (Map.Entry < ISSABasicBlock, Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > > > mapElem : flowSetsBB.entrySet()){
+                            Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > > currInstrFlowSets = (Pair < Map < SSAInstruction , Integer >, Map < SSAInstruction , Integer > >)mapElem.getValue();
                             ISSABasicBlock currentBB = mapElem.getKey();
                             if (currentBB!=null) {
-                                print("INSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("INSET: { "); //print(currInstrFlowSets.fst); println(" }");
+                                Map < SSAInstruction , Integer > currInSet= currInstrFlowSets.fst;
+                                for (Map.Entry < SSAInstruction , Integer > mapElem1 : currInSet.entrySet()) {
+                                    SSAInstruction currentInstr1 = mapElem1.getKey();
+                                    if (currentInstr1 != null) {
+                                        print(" ( "); print(currentInstr1); print(" : "); print(mapElem1.getKey()); print(" ), ");
+                                    }
+                                }
+                                println(" }");
                                 print("BASIC-BLOCK: "); println(currentBB.toString());
-                                print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
+                                print("OUTSET: { "); //print(currInstrFlowSets.fst); println(" }");
+                                Map < SSAInstruction , Integer > currOuSet= currInstrFlowSets.snd;
+                                for (Map.Entry < SSAInstruction , Integer > mapElem1 : currInSet.entrySet()) {
+                                    SSAInstruction currentInstr1 = mapElem1.getKey();
+                                    if (currentInstr1 != null) {
+                                        print(" ( "); print(currentInstr1); print(" : "); print(mapElem1.getKey()); print(" ), ");
+                                    }
+                                }
+                                println(" }");
                             }
                         }
                     }
