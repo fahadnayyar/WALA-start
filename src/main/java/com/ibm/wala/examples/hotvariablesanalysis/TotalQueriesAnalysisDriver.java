@@ -86,7 +86,8 @@ public class TotalQueriesAnalysisDriver {
                     TotalQueriesAnalysis totalQueriesAnalysis = new TotalQueriesAnalysis();
                     if (ir != null) {
                         System.out.println(ir.toString());
-                        System.out.println(totalQueriesAnalysis.perform(ir));
+//                        System.out.println(totalQueriesAnalysis.perform(ir));
+                          totalQueriesAnalysis.perform(ir);
                     }
 
 

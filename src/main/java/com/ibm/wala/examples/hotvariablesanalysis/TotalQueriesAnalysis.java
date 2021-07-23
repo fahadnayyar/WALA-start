@@ -31,8 +31,7 @@ import com.ibm.wala.util.intset.BitVector;
 import com.ibm.wala.util.intset.BitVectorIntSet;
 import com.ibm.wala.util.intset.IntSet;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Julian Dolby
@@ -55,15 +54,57 @@ public class TotalQueriesAnalysis {
         BitVector getLiveBefore(int instr);
     }
 
-    /** */
-    public static Result perform(IR ir) {
-        return perform(ir.getControlFlowGraph(), ir.getSymbolTable());
+//    helper methods
+    public static void println(Object str) {
+        System.out.println(str.toString());
+    }
+    public static void print(Object str) {
+        System.out.print(str.toString());
     }
 
     /** */
-    public static Result perform(
+    public static void perform(IR ir) {
+        println("starting!");
+        perform(ir.getControlFlowGraph(), ir.getSymbolTable());
+    }
+
+    /** */
+    public static void perform(
             final ControlFlowGraph<SSAInstruction, ISSABasicBlock> cfg, final SymbolTable symtab) {
-        return perform(cfg, symtab, new BitVector());
+        println("Level order traversal (bfs):");
+        println("Iterating over all exit basic blocks of cfg to mark 0 in visited map.");
+        Map<ISSABasicBlock, Integer> visitedMap = new HashMap<ISSABasicBlock, Integer>();
+        Iterator<ISSABasicBlock> bbIterator = cfg.stream().iterator();
+        while (bbIterator.hasNext()){
+            ISSABasicBlock currentBB = (ISSABasicBlock) bbIterator.next();
+            print("Iterating over Basic Block: "); println(bbIterator);
+            visitedMap.put(currentBB, new Integer(0));
+        }
+        ISSABasicBlock exitBB = cfg.exit();
+        print("Exit basic block: "); println(exitBB);
+//        println("Marking exit basic block as visited and inserting it in bfs queue");
+        println("Inserting exit basic block in bfs queue");
+//        visitedMap.put(exitBB, new Integer(1));
+        Queue<ISSABasicBlock> bfsQueue = new LinkedList<ISSABasicBlock>();
+        bfsQueue.add(exitBB);
+        while(!bfsQueue.isEmpty()) {
+            ISSABasicBlock currentBB = (ISSABasicBlock) bfsQueue.remove();
+            if (visitedMap.get(currentBB) == 0) {
+                print("Visited BB: ");
+                println(currentBB.toString());
+                visitedMap.put(currentBB, new Integer(1));
+                println("Pusing predecessors of currentBB into the bfs queue");
+                for (ISSABasicBlock predBB : Iterator2Iterable.make(cfg.getPredNodes(currentBB))) {
+                    if (visitedMap.get(predBB) == 0) {
+                        bfsQueue.add(predBB);
+                    }
+                }
+            }
+        }
+        ISSABasicBlock entryBB = (ISSABasicBlock) cfg.entry();
+        print("Entry basic block: "); println(entryBB);
+        return;
+//        return perform(cfg, symtab, new BitVector());
     }
 
     /**
