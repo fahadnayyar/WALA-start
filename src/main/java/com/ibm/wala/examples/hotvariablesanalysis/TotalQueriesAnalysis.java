@@ -19,11 +19,7 @@ import com.ibm.wala.dataflow.graph.IKilldallFramework;
 import com.ibm.wala.dataflow.graph.ITransferFunctionProvider;
 import com.ibm.wala.fixpoint.BitVectorVariable;
 import com.ibm.wala.fixpoint.UnaryOperator;
-import com.ibm.wala.ssa.IR;
-import com.ibm.wala.ssa.ISSABasicBlock;
-import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.ssa.SSAPhiInstruction;
-import com.ibm.wala.ssa.SymbolTable;
+import com.ibm.wala.ssa.*;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.CancelRuntimeException;
 import com.ibm.wala.util.collections.Iterator2Iterable;
@@ -179,6 +175,26 @@ public class TotalQueriesAnalysis {
                 // read.
                 for (int i = block.getLastInstructionIndex(); i >= block.getFirstInstructionIndex(); i--) {
                     SSAInstruction inst = instructions[i];
+
+                    //* finding conditional branch instructions
+//                    if (inst instanceof SSAConditionalBranchInstruction) {
+//                        System.out.print("yoo! branch inst found: ");
+//                        System.out.println(inst.toString());
+//                        SSAConditionalBranchInstruction condBranchInstr = (SSAConditionalBranchInstruction)inst;
+////                        condBranchInstr.get
+//                        System.out.print("used vars are: ");
+//                        for (int j = 0; j < condBranchInstr.getNumberOfUses(); j++) {
+//                            assert condBranchInstr.getUse(j) != -1 : condBranchInstr.toString();
+//                            if (!symtab.isConstant(condBranchInstr.getUse(j))) {
+////                                bits.set(condBranchInstr.getUse(j));
+//                                System.out.print(condBranchInstr.getUse(j)); System.out.print(", ");
+//                            }
+//                        }
+//                        System.out.println();
+//                    }
+
+
+
                     if (inst != null) {
                         BitVectorVariable outSet = new BitVectorVariable();
                         BitVectorVariable inSet = new BitVectorVariable();
