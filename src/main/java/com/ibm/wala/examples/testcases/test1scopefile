@@ -1,0 +1,4 @@
+Primordial,Java,stdlib,none
+Primordial,Java,jarFile,primordial.jar.model
+Application,Java,classFile,/home/fahad/Desktop/gsoc/wala/WALA-start/build/classes/java/main/com/ibm/wala/examples/testcases/Test1.class
+Application,Java,sourceFile,/home/fahad/Desktop/gsoc/wala/WALA-start/src/main/java/com/ibm/wala/examples/testcases/Test1.java
