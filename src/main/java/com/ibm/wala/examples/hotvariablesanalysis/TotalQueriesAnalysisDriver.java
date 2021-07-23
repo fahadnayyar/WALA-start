@@ -1,15 +1,9 @@
-package com.ibm.wala.examples.hotvariablesanalysis;
+/*
+ * Author: Fahad Nayyar (July, 2021)
+ *  TODO: add description of this class
+ */
 
-/*******************************************************************************
- * Copyright (c) 2008 IBM Corporation.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+package com.ibm.wala.examples.hotvariablesanalysis;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,7 +25,6 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.util.collections.Pair;
 import com.ibm.wala.util.config.AnalysisScopeReader;
 import com.ibm.wala.util.perf.Stopwatch;
-//import com.ibm.wala.util.ref.ReferenceCleanser;
 import com.ibm.wala.examples.hotvariablesanalysis.TotalQueriesAnalysis;
 import com.ibm.wala.ssa.IR;
 
@@ -48,7 +41,10 @@ public class TotalQueriesAnalysisDriver {
      * @throws ClassHierarchyException
      */
     public static void main(String[] args) throws IOException, ClassHierarchyException {
+        //* TODO: add usage descripton.
+
         String scopeFile = args[0];
+        String testCLassName = args[1];
 
         // measure running time
         Stopwatch s = new Stopwatch();
@@ -64,11 +60,11 @@ public class TotalQueriesAnalysisDriver {
 //        ReferenceCleanser.registerClassHierarchy(cha);
         AnalysisOptions options = new AnalysisOptions();
         IAnalysisCacheView cache = new AnalysisCacheImpl(options.getSSAOptions());
-//        ReferenceCleanser.registerCache(cache);
 
         System.out.println("building IRs...");
         for (IClass klass : cha) {
-            if (klass.getName().toString().compareTo("Lcom/ibm/wala/examples/testcases/Test1")==0) {
+            String testCasePath = "Lcom/ibm/wala/examples/testcases/" + testCLassName;
+            if (klass.getName().toString().compareTo(testCasePath)==0) {
                 // could also be written: if (klass.getSourceFileName().compareTo("Test1.java") == 0 )
                 System.out.println("yeah1!");
                 System.out.println(klass.getSourceFileName());
@@ -82,7 +78,6 @@ public class TotalQueriesAnalysisDriver {
                 if (method.getName().toString().compareTo("main")==0) {
                     System.out.println("yeah2!!");
                     System.out.println(method.getName().toString());
-
 
 
                     // Here: write code to be analyzed on main method in Test1.java file (Test1 class)
@@ -121,15 +116,9 @@ public class TotalQueriesAnalysisDriver {
                                 print("BASIC-BLOCK: "); println(currentBB.toString());
                                 print("OUTSET: { "); print(currInstrFlowSets.fst); println(" }");
                             }
-
                         }
                     }
-
-
-
                 }
-//                System.out.println(method.getName().toString());
-
             }
         }
         System.out.println("done");
